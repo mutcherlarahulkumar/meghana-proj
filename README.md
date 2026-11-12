@@ -8,7 +8,7 @@ A clean, creative goal tracker for turning everyday intentions into achievements
 
 **Angular 20 · Tailwind CSS · Express 5 · MySQL 8 · Jest**
 
-[Quick start](#-quick-start) · [Environment](#-environment-configuration) · [Commands](#-command-reference) · [Architecture](#-project-structure)
+[Quick start](#-quick-start) · [Configuration](#-configuration) · [Commands](#-command-reference) · [Architecture](#-project-structure)
 
 </div>
 
@@ -55,19 +55,7 @@ npm ci
 
 ### 3. Configure the backend
 
-**macOS / Linux / Git Bash:**
-
-```bash
-cp server/.env.example server/.env
-```
-
-**Windows PowerShell:**
-
-```powershell
-Copy-Item server/.env.example server/.env
-```
-
-Open `server/.env` in your editor and set your real MySQL connection details using the reference below. Keep this file local; it is ignored by Git.
+Open **`server/src/config.js`** and change the database values to match your MySQL installation. No `.env` file or environment-variable setup is needed.
 
 ### 4. Check the existing database
 
@@ -93,31 +81,39 @@ Open **http://localhost:4200** to use the app. Angular forwards `/api` requests 
 
 > The health endpoint checks the API process only. Open `/api/goals` to verify that the API can also read the database.
 
-## 🔐 Environment configuration
+## ⚙️ Configuration
 
-All backend variables belong in **`server/.env`**. The frontend needs no `.env` file and never receives database credentials.
+All backend settings are hardcoded in **`server/src/config.js`**. Edit this one file before running the app:
 
-```dotenv
-PORT=3000
-CLIENT_ORIGIN=http://localhost:4200
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_USER=goal_tracker
-DB_PASSWORD=your_mysql_password
-DB_NAME=goal_tracker
+```javascript
+module.exports = {
+  port: 3000,
+  clientOrigin: 'http://localhost:4200',
+  database: {
+    host: '127.0.0.1',
+    port: 3306,
+    user: 'goal_tracker',
+    password: 'change-me',
+    database: 'goal_tracker',
+  },
+};
 ```
 
-| Variable        | Purpose                                              | Example / default       |
-| --------------- | ---------------------------------------------------- | ----------------------- |
-| `PORT`          | Port used by the Express API                         | `3000`                  |
-| `CLIENT_ORIGIN` | Frontend origin allowed by CORS                      | `http://localhost:4200` |
-| `DB_HOST`       | MySQL server hostname or IP                          | `127.0.0.1`             |
-| `DB_PORT`       | MySQL port                                           | `3306`                  |
-| `DB_USER`       | Existing MySQL account                               | `goal_tracker`          |
-| `DB_PASSWORD`   | Password for that account; replace the example value | Your actual password    |
-| `DB_NAME`       | Existing database containing `goals`                 | `goal_tracker`          |
+| Setting             | What to change                                          |
+| ------------------- | ------------------------------------------------------- |
+| `port`              | Express API port; leave `3000` for the default setup    |
+| `clientOrigin`      | Frontend address; leave `http://localhost:4200` locally |
+| `database.host`     | Your MySQL hostname or IP                               |
+| `database.port`     | MySQL port, usually `3306`                              |
+| `database.user`     | Your existing MySQL username                            |
+| `database.password` | Replace `change-me` with your actual MySQL password     |
+| `database.database` | Name of your existing database containing `goals`       |
 
-Use an account with `SELECT`, `INSERT`, `UPDATE`, and `DELETE` privileges on the goal table. Restart the API after changing environment variables. If you change `PORT`, also update the target in `client/proxy.conf.json`.
+Restart the API after editing this file. If you change the API `port`, update the target port in `client/proxy.conf.json` too. MySQL settings remain on the backend; the frontend uses `/api` and needs no separate configuration.
+
+Use a MySQL account with `SELECT`, `INSERT`, `UPDATE`, and `DELETE` privileges on the goal table. The committed settings are placeholders; keep actual passwords private when sharing the project.
+
+There are no login/signup pages or authentication requirements. All app pages are open, and goals are shared within this single workspace.
 
 ## ⌨️ Command reference
 
@@ -137,7 +133,7 @@ Run all commands below from the **repository root**.
 | `npm run format`        | Format supported source, configuration, and documentation files with Prettier |
 | `npm run format:check`  | Check formatting without changing files                                       |
 
-Prettier settings are stored in `.prettierrc.json`. Generated output, dependencies, environment files, and the npm lockfile are excluded through `.prettierignore`.
+Prettier settings are stored in `.prettierrc.json`. Generated output, dependencies and the npm lockfile are excluded through `.prettierignore`.
 
 ## 🗂️ Project structure
 
@@ -159,11 +155,11 @@ meghana-proj/
 ├── server/
 │   ├── src/
 │   │   ├── index.js        # Start and stop the server
-│   │   ├── app.js          # Express setup, .env loading, error handling
+│   │   ├── app.js          # Express setup and error handling
+│   │   ├── config.js       # Hardcoded API and MySQL settings
 │   │   ├── goals.js        # Goal routes and input validation
 │   │   └── database/       # MySQL pool, goal queries, table contract
-│   ├── tests/              # API and repository Jest tests
-│   └── .env.example        # Backend configuration template
+│   └── tests/              # API and repository Jest tests
 ├── .prettierrc.json         # Shared formatting rules
 └── package.json            # Workspace scripts
 ```
@@ -178,7 +174,7 @@ All frontend files live directly in `client/src/app`; there are no `core`, `shar
 
 ### Understanding the backend
 
-Start with `server/src/index.js`: it starts the Express app. `app.js` loads the environment, configures Express, and handles errors. `goals.js` contains the five goal endpoints and their input validation together. Each endpoint calls a database function directly.
+Start with `server/src/index.js`: it starts the Express app. `config.js` holds the hardcoded settings. `app.js` configures Express and handles errors. `goals.js` contains the five goal endpoints and their input validation together. Each endpoint calls a database function directly.
 
 All MySQL code stays inside `server/src/database`: `pool.js` opens connections and `goal.repository.js` holds the SQL queries. There are no separate controller or service layers to navigate.
 
@@ -234,18 +230,18 @@ npm run build
 npm start
 ```
 
-The Angular output is **`client/dist/client/browser`**. Serve that directory with an SPA fallback to `index.html`, and reverse-proxy `/api` to Express. `npm start` runs the API only; it does not serve the Angular bundle. Configure the production database values and frontend origin in the API environment.
+The Angular output is **`client/dist/client/browser`**. Serve that directory with an SPA fallback to `index.html`, and reverse-proxy `/api` to Express. `npm start` runs the API only; it does not serve the Angular bundle. Set the database values and frontend origin in `server/src/config.js` before starting the API.
 
 ## 🛠️ Troubleshooting
 
-| Symptom                                            | What to check                                                                                |
-| -------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| Goals do not load                                  | Confirm MySQL is running, backend environment values are correct, and `/api/goals` responds. |
-| Access denied by MySQL                             | Check the username, password, allowed host, and table privileges.                            |
-| Missing table or column                            | Compare the existing schema with the [database contract](server/src/database/README.md).     |
-| API connection fails                               | Confirm the API port matches `client/proxy.conf.json`.                                       |
-| Port already in use                                | Stop the conflicting process, or configure another port and update the proxy.                |
-| Refreshing a detail page returns 404 in production | Configure the frontend server to fall back to `index.html`.                                  |
+| Symptom                                            | What to check                                                                                        |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Goals do not load                                  | Confirm MySQL is running, settings in `server/src/config.js` are correct, and `/api/goals` responds. |
+| Access denied by MySQL                             | Check the username, password, allowed host, and table privileges.                                    |
+| Missing table or column                            | Compare the existing schema with the [database contract](server/src/database/README.md).             |
+| API connection fails                               | Confirm the API port matches `client/proxy.conf.json`.                                               |
+| Port already in use                                | Stop the conflicting process, or configure another port and update the proxy.                        |
+| Refreshing a detail page returns 404 in production | Configure the frontend server to fall back to `index.html`.                                          |
 
 ---
 

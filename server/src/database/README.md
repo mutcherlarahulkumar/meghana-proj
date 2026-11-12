@@ -12,4 +12,4 @@ The application assumes a `goals` table already exists. No schema is created or 
 | end_date    | DATE NOT NULL                                      |
 | status      | ENUM('pending','in_progress','completed') NOT NULL |
 
-If your existing names differ, change only `goal.repository.js`. All SQL and connection configuration live in this directory. Use a dedicated account with SELECT, INSERT, UPDATE, DELETE privileges. Production API has no authentication: use only on a trusted private network until authentication/authorization is added.
+If your existing names differ, change only `goal.repository.js`. All SQL and connection setup live in this directory. Edit the hardcoded MySQL values in `../config.js`. Use a dedicated account with SELECT, INSERT, UPDATE, DELETE privileges. Production API has no authentication: use only on a trusted private network until authentication/authorization is added.

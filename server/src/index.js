@@ -1,6 +1,6 @@
 const { createApp } = require('./app');
 const pool = require('./database/pool');
-const port = Number(process.env.PORT || 3000);
+const port = require('./config').port;
 
 const server = createApp().listen(port, () => {
   console.log(`Goal API listening on ${port}`);
