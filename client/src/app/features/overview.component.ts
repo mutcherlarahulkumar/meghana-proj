@@ -4,24 +4,174 @@ import { FormsModule } from '@angular/forms';
 import { GoalService } from '../core/goal.service';
 import { Goal } from '../core/goal.model';
 import { GoalCardComponent } from '../shared/goal-card.component';
-@Component({standalone:true,imports:[RouterLink,FormsModule,GoalCardComponent],template:`
-<div class="page-heading"><div><div class="eyebrow">A LITTLE FOCUS. A LOT OF POSSIBILITY.</div><h1>{{ isDashboard ? 'Welcome back' : 'My goals' }}<span class="green">{{ isDashboard ? ', dreamer.' : '.' }}</span></h1><p>{{ isDashboard ? 'Let’s turn your intentions into your next achievement.' : 'Give your ambitions a place to grow.' }}</p></div><a class="btn primary" routerLink="/goals/new"><span>＋</span> Add goal</a></div>
-<div class="tabs"><a routerLink="/dashboard" [class.active]="isDashboard">Overview</a><a routerLink="/goals" [class.active]="!isDashboard">All goals <span>{{ goals.length }}</span></a></div>
-@if (loading) { <div class="empty" role="status">Gathering your goals…</div> } @else if (error) { <div class="error" role="alert">{{ error }} <button (click)="load()">Try again</button></div> } @else {
-@if (isDashboard) {
-<section class="hero"><div class="hero-copy"><span class="hero-tag">YOUR NEXT CHAPTER STARTS HERE</span><h2>Dream it. Plan it.<br><em>Make it happen.</em></h2><p>You don’t have to do it all today.<br>Just take the next step toward what matters.</p><a routerLink="/goals/new" class="hero-link">Set a new goal <span>↗</span></a></div><div class="hero-art" aria-hidden="true"><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><span class="spark spark-one">✦</span><span class="spark spark-two">✧</span><div class="step step-one"></div><div class="step step-two"></div><div class="step step-three"><span>↗</span></div><div class="art-label"><span>✦</span> Keep growing</div></div></section>
-<section class="stats" aria-label="Goal statistics"><div class="stat"><span class="stat-icon lavender">◎</span><div><p>Total goals</p><strong>{{ goals.length }}</strong></div><span class="stat-note">Every ambition counts</span></div><div class="stat"><span class="stat-icon mint">✓</span><div><p>Completed goals</p><strong>{{ completed }}</strong></div><span class="stat-note">Look how far you’ve come</span></div><div class="stat"><span class="stat-icon peach">◷</span><div><p>Pending goals</p><strong>{{ goals.length - completed }}</strong></div><span class="stat-note">Possibilities in progress</span></div></section>
-<div class="section-heading"><div><h2>Your goals, in motion <span>{{ goals.length }}</span></h2><p>A little commitment today. A little closer tomorrow.</p></div><a routerLink="/goals" class="text-link">View all goals ↗</a></div>
-} @else { <div class="filters"><label class="search"><span>⌕</span><input aria-label="Search goals" [(ngModel)]="search" placeholder="Find a goal…"></label><select aria-label="Filter by status" [(ngModel)]="status"><option value="">All statuses</option><option value="pending">Pending</option><option value="in_progress">In progress</option><option value="completed">Completed</option></select></div> }
-@if (visible.length) { <div class="goal-grid">@for (goal of visible; track goal.id) { <app-goal-card [goal]="goal" /> }</div> } @else { <section class="empty"><span class="empty-icon">↗</span><h2>{{ goals.length ? 'No matching goals' : 'A fresh start, full of possibility.' }}</h2><p>{{ goals.length ? 'Try another search or status.' : 'Your first goal is the beginning of something good.' }}</p><a class="btn primary" routerLink="/goals/new">＋ Create a goal</a></section> }
-@if (isDashboard) { <div class="quote"><span>✧</span> “Great things are done by a series of small things brought together.” <small>— Vincent van Gogh</small></div> }
-}`})
+@Component({
+  standalone: true,
+  imports: [RouterLink, FormsModule, GoalCardComponent],
+  template: ` <div class="page-heading">
+      <div>
+        <div class="eyebrow">A LITTLE FOCUS. A LOT OF POSSIBILITY.</div>
+        <h1>
+          {{ isDashboard ? 'Welcome back' : 'My goals'
+          }}<span class="green">{{ isDashboard ? ', dreamer.' : '.' }}</span>
+        </h1>
+        <p>
+          {{
+            isDashboard
+              ? 'Let’s turn your intentions into your next achievement.'
+              : 'Give your ambitions a place to grow.'
+          }}
+        </p>
+      </div>
+      <a class="btn primary" routerLink="/goals/new"><span>＋</span> Add goal</a>
+    </div>
+    <div class="tabs">
+      <a routerLink="/dashboard" [class.active]="isDashboard">Overview</a
+      ><a routerLink="/goals" [class.active]="!isDashboard"
+        >All goals <span>{{ goals.length }}</span></a
+      >
+    </div>
+    @if (loading) {
+      <div class="empty" role="status">Gathering your goals…</div>
+    } @else if (error) {
+      <div class="error" role="alert">{{ error }} <button (click)="load()">Try again</button></div>
+    } @else {
+      @if (isDashboard) {
+        <section class="hero">
+          <div class="hero-copy">
+            <span class="hero-tag">YOUR NEXT CHAPTER STARTS HERE</span>
+            <h2>Dream it. Plan it.<br /><em>Make it happen.</em></h2>
+            <p>
+              You don’t have to do it all today.<br />Just take the next step toward what matters.
+            </p>
+            <a routerLink="/goals/new" class="hero-link">Set a new goal <span>↗</span></a>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <span class="orbit orbit-one"></span><span class="orbit orbit-two"></span
+            ><span class="spark spark-one">✦</span><span class="spark spark-two">✧</span>
+            <div class="step step-one"></div>
+            <div class="step step-two"></div>
+            <div class="step step-three"><span>↗</span></div>
+            <div class="art-label"><span>✦</span> Keep growing</div>
+          </div>
+        </section>
+        <section class="stats" aria-label="Goal statistics">
+          <div class="stat">
+            <span class="stat-icon lavender">◎</span>
+            <div>
+              <p>Total goals</p>
+              <strong>{{ goals.length }}</strong>
+            </div>
+            <span class="stat-note">Every ambition counts</span>
+          </div>
+          <div class="stat">
+            <span class="stat-icon mint">✓</span>
+            <div>
+              <p>Completed goals</p>
+              <strong>{{ completed }}</strong>
+            </div>
+            <span class="stat-note">Look how far you’ve come</span>
+          </div>
+          <div class="stat">
+            <span class="stat-icon peach">◷</span>
+            <div>
+              <p>Pending goals</p>
+              <strong>{{ goals.length - completed }}</strong>
+            </div>
+            <span class="stat-note">Possibilities in progress</span>
+          </div>
+        </section>
+        <div class="section-heading">
+          <div>
+            <h2>
+              Your goals, in motion <span>{{ goals.length }}</span>
+            </h2>
+            <p>A little commitment today. A little closer tomorrow.</p>
+          </div>
+          <a routerLink="/goals" class="text-link">View all goals ↗</a>
+        </div>
+      } @else {
+        <div class="filters">
+          <label class="search"
+            ><span>⌕</span
+            ><input
+              aria-label="Search goals"
+              [(ngModel)]="search"
+              placeholder="Find a goal…" /></label
+          ><select aria-label="Filter by status" [(ngModel)]="status">
+            <option value="">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="in_progress">In progress</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      }
+      @if (visible.length) {
+        <div class="goal-grid">
+          @for (goal of visible; track goal.id) {
+            <app-goal-card [goal]="goal" />
+          }
+        </div>
+      } @else {
+        <section class="empty">
+          <span class="empty-icon">↗</span>
+          <h2>{{ goals.length ? 'No matching goals' : 'A fresh start, full of possibility.' }}</h2>
+          <p>
+            {{
+              goals.length
+                ? 'Try another search or status.'
+                : 'Your first goal is the beginning of something good.'
+            }}
+          </p>
+          <a class="btn primary" routerLink="/goals/new">＋ Create a goal</a>
+        </section>
+      }
+      @if (isDashboard) {
+        <div class="quote">
+          <span>✧</span> “Great things are done by a series of small things brought together.”
+          <small>— Vincent van Gogh</small>
+        </div>
+      }
+    }`,
+})
 export class OverviewComponent implements OnInit {
- private api = inject(GoalService); private router = inject(Router);
- goals: Goal[] = []; loading = true; error = ''; search = ''; status = '';
- get isDashboard() { return this.router.url.startsWith('/dashboard'); }
- get completed() { return this.goals.filter(g => g.status === 'completed').length; }
- get visible() { const filtered = this.goals.filter(g => (!this.status || g.status === this.status) && (g.title+' '+g.description+' '+g.category).toLowerCase().includes(this.search.toLowerCase())); return this.isDashboard ? filtered.slice(0,3) : filtered; }
- ngOnInit() { this.load(); }
- load() { this.loading = true; this.error = ''; this.api.list().subscribe({next:goals => { this.goals = goals; this.loading = false; },error:() => { this.error = 'We couldn’t load your goals. Check that the API and database are available.'; this.loading = false; }}); }
+  private api = inject(GoalService);
+  private router = inject(Router);
+  goals: Goal[] = [];
+  loading = true;
+  error = '';
+  search = '';
+  status = '';
+  get isDashboard() {
+    return this.router.url.startsWith('/dashboard');
+  }
+  get completed() {
+    return this.goals.filter((g) => g.status === 'completed').length;
+  }
+  get visible() {
+    const filtered = this.goals.filter(
+      (g) =>
+        (!this.status || g.status === this.status) &&
+        (g.title + ' ' + g.description + ' ' + g.category)
+          .toLowerCase()
+          .includes(this.search.toLowerCase()),
+    );
+    return this.isDashboard ? filtered.slice(0, 3) : filtered;
+  }
+  ngOnInit() {
+    this.load();
+  }
+  load() {
+    this.loading = true;
+    this.error = '';
+    this.api.list().subscribe({
+      next: (goals) => {
+        this.goals = goals;
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'We couldn’t load your goals. Check that the API and database are available.';
+        this.loading = false;
+      },
+    });
+  }
 }
