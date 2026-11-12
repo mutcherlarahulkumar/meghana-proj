@@ -153,20 +153,23 @@ meghana-proj/
 │   └── proxy.conf.json     # Local /api → Express forwarding
 ├── server/
 │   ├── src/
-│   │   ├── config/         # Environment loading
-│   │   ├── database/       # MySQL pool, all SQL, table contract
-│   │   ├── routes/         # Endpoint routing
-│   │   ├── controllers/    # Request parsing and HTTP responses
-│   │   ├── services/       # Goal operations and not-found handling
-│   │   ├── validation/     # Payload and calendar-date validation
-│   │   └── middleware/     # Centralized error responses
+│   │   ├── index.js        # Start and stop the server
+│   │   ├── app.js          # Express setup, .env loading, error handling
+│   │   ├── goals.js        # Goal routes and input validation
+│   │   └── database/       # MySQL pool, goal queries, table contract
 │   ├── tests/              # API and repository Jest tests
 │   └── .env.example        # Backend configuration template
 ├── .prettierrc.json         # Shared formatting rules
 └── package.json            # Workspace scripts
 ```
 
-**Request flow:** Angular page → HTTP service → Express route → controller → service → database repository → MySQL.
+**Request flow:** Angular page → HTTP service → `goals.js` → database queries → MySQL.
+
+### Understanding the backend
+
+Start with `server/src/index.js`: it starts the Express app. `app.js` loads the environment, configures Express, and handles errors. `goals.js` contains the five goal endpoints and their input validation together. Each endpoint calls a database function directly.
+
+All MySQL code stays inside `server/src/database`: `pool.js` opens connections and `goal.repository.js` holds the SQL queries. There are no separate controller or service layers to navigate.
 
 ## 🔌 API reference
 
