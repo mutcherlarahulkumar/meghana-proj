@@ -1,0 +1,21 @@
+{
+  "name": "goal-api",
+  "private": true,
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "test": "jest --runInBand"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mysql2": "^3.14.0",
+    "dotenv": "^16.5.0",
+    "cors": "^2.8.5",
+    "helmet": "^8.1.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.1.0"
+  }
+}
