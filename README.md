@@ -145,10 +145,15 @@ Prettier settings are stored in `.prettierrc.json`. Generated output, dependenci
 meghana-proj/
 ├── client/
 │   ├── src/app/
-│   │   ├── core/            # Goal models and HTTP service
-│   │   ├── shared/          # Reusable goal card
-│   │   ├── features/        # Dashboard/list, details, create/edit
-│   │   └── app.routes.ts    # Frontend navigation
+│   │   ├── app.component.ts / .html          # Sidebar and app shell
+│   │   ├── app.routes.ts                     # Frontend navigation
+│   │   ├── overview.component.ts / .html     # Dashboard and goal list
+│   │   ├── goal-detail.component.ts / .html  # Full goal and delete action
+│   │   ├── goal-form.component.ts / .html    # Create and edit form
+│   │   ├── goal-card.component.ts / .html    # Reusable goal card
+│   │   ├── goal.service.ts                   # API requests
+│   │   ├── goal.model.ts                     # Goal fields and status labels
+│   │   └── *.spec.ts                         # Tests next to the code
 │   ├── src/styles.css      # Tailwind directives and visual styling
 │   └── proxy.conf.json     # Local /api → Express forwarding
 ├── server/
@@ -164,6 +169,12 @@ meghana-proj/
 ```
 
 **Request flow:** Angular page → HTTP service → `goals.js` → database queries → MySQL.
+
+### Understanding the frontend
+
+All frontend files live directly in `client/src/app`; there are no `core`, `shared`, or `features` folders. Open a page's `.component.html` to change its markup and the matching `.component.ts` to change its behavior. The dashboard and goal list share `overview`; create and edit share `goal-form`.
+
+`app.routes.ts` maps URLs to pages, `goal.service.ts` contains the API calls, and `goal.model.ts` describes the goal fields. Tailwind and the visual styles stay in `client/src/styles.css`. Tests sit alongside the files they check.
 
 ### Understanding the backend
 

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { GoalFormComponent } from './goal-form.component';
-import { GoalService } from '../core/goal.service';
+import { GoalService } from './goal.service';
 describe('Goal form', () => {
   let component: GoalFormComponent;
   let api: { create: jest.Mock };

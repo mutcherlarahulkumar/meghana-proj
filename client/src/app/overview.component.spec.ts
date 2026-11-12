@@ -2,8 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { OverviewComponent } from './overview.component';
-import { GoalService } from '../core/goal.service';
-import { Goal } from '../core/goal.model';
+import { GoalService } from './goal.service';
+import { Goal } from './goal.model';
 describe('Overview', () => {
   const base = {
     description: 'A daily habit',
