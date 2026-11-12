@@ -1,6 +1,6 @@
 # Existing database contract
 
-The application assumes a `goals` table already exists. No schema is created or changed on startup.
+For a new local installation, follow the [complete MySQL Workbench setup in the root README](../../../README.md#-quick-start) and run [`setup.sql`](setup.sql) manually as an administrator. It creates the database, table, and restricted application users. The app itself assumes this setup is complete; no schema is created or changed on startup.
 
 | Column      | Expected MySQL type                                |
 | ----------- | -------------------------------------------------- |
