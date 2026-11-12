@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { OverviewComponent } from './features/overview.component';
-import { GoalDetailComponent } from './features/goal-detail.component';
-import { GoalFormComponent } from './features/goal-form.component';
+import { OverviewComponent } from './overview.component';
+import { GoalDetailComponent } from './goal-detail.component';
+import { GoalFormComponent } from './goal-form.component';
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
   { path: 'dashboard', component: OverviewComponent },
