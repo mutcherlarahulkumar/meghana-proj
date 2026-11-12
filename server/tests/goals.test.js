@@ -1,0 +1,75 @@
+const request = require('supertest');
+const { createApp } = require('../src/app');
+const goal = {
+  title: 'Read twelve books',
+  description: 'Build a daily reading habit',
+  category: 'Learning',
+  startDate: '2026-01-01',
+  endDate: '2026-12-31',
+  status: 'pending',
+};
+let repo, app;
+beforeEach(() => {
+  repo = {
+    list: jest.fn().mockResolvedValue([{ id: 1, ...goal }]),
+    find: jest.fn().mockResolvedValue({ id: 1, ...goal }),
+    create: jest.fn().mockResolvedValue({ id: 2, ...goal }),
+    update: jest.fn().mockResolvedValue({ id: 1, ...goal, status: 'completed' }),
+    delete: jest.fn().mockResolvedValue(true),
+  };
+  app = createApp(repo);
+});
+test('lists goals', async () => {
+  const r = await request(app).get('/api/goals');
+  expect(r.status).toBe(200);
+  expect(r.body.data).toHaveLength(1);
+});
+test('creates a validated goal', async () => {
+  const r = await request(app).post('/api/goals').send(goal);
+  expect(r.status).toBe(201);
+  expect(repo.create).toHaveBeenCalledWith(goal);
+});
+test.each([
+  { ...goal, title: '  ' },
+  { ...goal, endDate: '2025-01-01' },
+  { ...goal, startDate: '2026-02-30' },
+  { ...goal, status: 'invalid' },
+  { ...goal, extra: 'x' },
+])('rejects invalid input %#', async (body) => {
+  expect((await request(app).post('/api/goals').send(body)).status).toBe(400);
+  expect(repo.create).not.toHaveBeenCalled();
+});
+test('gets a full goal', async () => {
+  const r = await request(app).get('/api/goals/1');
+  expect(r.body.data).toEqual({ id: 1, ...goal });
+});
+test('updates a goal', async () => {
+  const r = await request(app)
+    .put('/api/goals/1')
+    .send({ ...goal, status: 'completed' });
+  expect(r.status).toBe(200);
+  expect(r.body.data.status).toBe('completed');
+});
+test('deletes a goal', async () => {
+  expect((await request(app).delete('/api/goals/1')).status).toBe(204);
+  expect(repo.delete).toHaveBeenCalledWith(1);
+});
+test.each(['abc', '-1', '0', '1.5'])('rejects invalid ID %s', async (id) => {
+  expect((await request(app).get('/api/goals/' + id)).status).toBe(400);
+});
+test('returns 404 for missing goal', async () => {
+  repo.find.mockResolvedValue(undefined);
+  expect((await request(app).get('/api/goals/99')).status).toBe(404);
+});
+test('returns 404 when deleting missing goal', async () => {
+  repo.delete.mockResolvedValue(false);
+  expect((await request(app).delete('/api/goals/99')).status).toBe(404);
+});
+test('does not expose database details', async () => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+  repo.list.mockRejectedValue(new Error('secret database password'));
+  const r = await request(app).get('/api/goals');
+  expect(r.status).toBe(500);
+  expect(JSON.stringify(r.body)).not.toContain('secret');
+  jest.restoreAllMocks();
+});
